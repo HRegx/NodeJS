@@ -8,33 +8,49 @@ const cors = require('cors')
 _server.use(cors());
 _server.use(express.json())
 
+require("dotenv").config();
+// console.log(process.env.host);
+// const  dbConn = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "password",
+//     database: "puzzle"
+// })
+
+
 const  dbConn = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "password",
-    database: "puzzle"
+    host: process.env.host,
+    user: process.env.user,
+    password: process.env.password,
+    database: process.env.database
 })
 
+_server.get('/highScore', (req,res)=>{
+    const sql = "SELECT f_score FROM (SELECT f_score FROM top_score ORDER BY f_score ASC LIMIT 10) ptable  ORDER BY f_score DESC LIMIT 1";
 
-_server.get('/tester',(req, res)=>{
-    res.send("Your EC2 NodeJS is Running")
-});
+    dbConn.query(sql,(err, result)=>{
+        if(err){
+            console.log(err);            
+        } else {
+            res.send(result);
+        }
+    })
+})
 
-_server.get('/list',(req, res)=>{
-    const sql = "SELECT * FROM top_score";
+_server.get('/handpick',(req, res)=>{
+    const sql = "SELECT f_id, f_score, f_time, f_date, f_screen_name FROM top_score ORDER BY f_score ASC LIMIT 10";
 
     dbConn.query(sql,(err, result)=>{
         if(err){
             console.log(err);
         } else {
             res.send(result)
+            console.log(result)
         }
     })
 })
 
-_server.post("/create",(req, res)=>{
-    console.log("create");
-
+_server.post("/inject",(req, res)=>{
     const f_score = req.body.f_score;
     const f_time = req.body.f_time;
     const f_screen_name = req.body.f_screen_name;
@@ -55,7 +71,7 @@ _server.post("/create",(req, res)=>{
     });
 })
 
-_server.listen(3001,()=>{
+_server.listen(8080,()=>{
     console.log("Server Online");
 });
 
