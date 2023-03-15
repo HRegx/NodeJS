@@ -9,7 +9,7 @@ _server.use(cors());
 _server.use(express.json())
 
 require("dotenv").config();
-// console.log(process.env.host);
+
 // const  dbConn = mysql.createConnection({
 //     host: "localhost",
 //     user: "root",
