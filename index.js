@@ -30,6 +30,20 @@ _server.get("/tester",(req,res)=>{
     res.json("Your EC2 NodeJS is Running...");
 })
 
+_server.get('/stocks',(req, res)=>{
+    // const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= '1993-02-08' AND fieDate <= '1993-02-18'";
+    const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= ? AND fieDate <= ?";
+        
+    dbConn.query(sql,['1993-02-08','1993-02-18'],(err, result)=>{
+        if(err){
+            console.log(err);
+        } else {
+            res.send(result)
+            console.log(result)
+        }
+    })
+})
+
 _server.get('/highScore', (req,res)=>{
     const sql = "SELECT f_score FROM (SELECT f_score FROM top_score ORDER BY f_score ASC LIMIT 10) ptable  ORDER BY f_score DESC LIMIT 1";
 
