@@ -10,38 +10,25 @@ _server.use(express.json())
 
 require("dotenv").config();
 
-// const  dbConn = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "password",
-//     database: "puzzle"
-// })
-
-
+console.log(process.env.host);
 const  dbConn = mysql.createConnection({
-    host: process.env.host,
-    user: process.env.user,
-    password: process.env.password,
-    database: process.env.database
+    host: "localhost",
+    user: "root",
+    password: "password",
+    database: "reviewthepast"
 })
+
+
+// const  dbConn = mysql.createConnection({
+//     host: process.env.host,
+//     user: process.env.user,
+//     password: process.env.password,
+//     database: process.env.database
+// })
 
 
 _server.get("/tester",(req,res)=>{
     res.json("Your EC2 NodeJS is Running...");
-})
-
-_server.get('/stocks',(req, res)=>{
-    // const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= '1993-02-08' AND fieDate <= '1993-02-18'";
-    const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= ? AND fieDate <= ?";
-        
-    dbConn.query(sql,['1993-02-08','1993-02-18'],(err, result)=>{
-        if(err){
-            console.log(err);
-        } else {
-            res.send(result)
-            console.log(result)
-        }
-    })
 })
 
 _server.get('/highScore', (req,res)=>{
@@ -69,6 +56,8 @@ _server.get('/handpick',(req, res)=>{
     })
 })
 
+
+
 _server.post("/inject",(req, res)=>{
     console.log("create");
 
@@ -90,6 +79,46 @@ _server.post("/inject",(req, res)=>{
             res.send("Values Successfully Inserted");
         }
     });
+})
+
+
+_server.get('/stocks',(req, res)=>{
+    
+    const dateFrom = req.body.dateFrom;
+    const dateTo = req.body.dateTo;
+    console.log(dateFrom +"::"+dateTo)
+
+    const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= ? AND fieDate <= ?";
+        
+    dbConn.query(sql,[dateFrom,dateTo],(err, result)=>{
+    // dbConn.query(sql,['1991-01-01','2023-01-01'],(err, result)=>{
+        if(err){
+            console.log(err);
+        } else {
+            res.send(result)
+            console.log(result)
+        }
+    })
+})
+
+
+_server.post('/stocks',(req, res)=>{
+    
+    const dateFrom = req.body.dateFrom;
+    const dateTo = req.body.dateTo;
+    console.log(dateFrom +"::"+dateTo)
+
+    const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= ? AND fieDate <= ?";
+        
+    dbConn.query(sql,[dateFrom,dateTo],(err, result)=>{
+    // dbConn.query(sql,['1991-01-01','2023-01-01'],(err, result)=>{
+        if(err){
+            console.log(err);
+        } else {
+            res.send(result)
+            console.log(result)
+        }
+    })
 })
 
 _server.listen(8080,()=>{
