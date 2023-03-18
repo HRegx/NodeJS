@@ -59,8 +59,6 @@ _server.get('/handpick',(req, res)=>{
 
 
 _server.post("/inject",(req, res)=>{
-    console.log("create");
-
     const f_score = req.body.f_score;
     const f_time = req.body.f_time;
     const f_screen_name = req.body.f_screen_name;
@@ -82,44 +80,64 @@ _server.post("/inject",(req, res)=>{
 })
 
 
-_server.get('/stocks',(req, res)=>{
-    
+// _server.post("/stocks",(req, res)=>{    
+//     const dateFrom = req.body.dateFrom;
+//     const dateTo = req.body.dateTo;
+//     console.log(dateFrom +" :log from server: "+ dateTo)
+
+//     const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= ? AND fieDate <= ?";
+        
+//     dbConn.query(sql,[dateFrom,dateTo],(err, result)=>{
+//     // dbConn.query(sql,['1991-01-01','2023-01-01'],(err, result)=>{
+//         if(err){
+//             console.log(err);
+//         } else {
+//             res.send(result)
+//         }
+//     })
+// })
+
+
+//Add field tempID and assign value from 1 to n
+//SELECT (@row_number:=@row_number+1) as tempID, fieID FROM reviewthepast.tabspy, (SELECT @row_number:=0) AS t;
+
+
+// SELECT tempID, fieID, fieDate, fieClose 
+// FROM (
+// 		SELECT (@row_number:=@row_number+1) as tempID, fieID, fieDate, fieClose 
+// 		FROM reviewthepast.tabspy, (SELECT @row_number:=2-1) AS t  
+// 		WHERE fieDate >= '1993-02-05' AND fieDate <= '1993-02-16'
+// ) as child
+// WHERE MOD(tempID, 2) = 0;
+
+
+//This POST will Buy Stocks After "Every no. of trading day" with Selected Date Range.
+_server.post("/stocks",(req, res)=>{    
     const dateFrom = req.body.dateFrom;
     const dateTo = req.body.dateTo;
-    console.log(dateFrom +"::"+dateTo)
+    const n = req.body.noOfDays;
+    console.log(dateFrom +" :log from server: "+ dateTo)
 
-    const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= ? AND fieDate <= ?";
-        
-    dbConn.query(sql,[dateFrom,dateTo],(err, result)=>{
+    const sql = "SELECT tempID, fieID, fieDate, fieClose \
+    FROM ( \
+            SELECT (@row_number:=@row_number+1) as tempID, fieID, fieDate, fieClose \
+            FROM reviewthepast.tabspy, (SELECT @row_number:=?-1) AS t \
+            WHERE fieDate >= ? AND fieDate <= ? \
+    ) as child \
+    WHERE MOD(tempID, ?) = 0";
+
+    dbConn.query(sql,[n,dateFrom,dateTo,n],(err, result)=>{
     // dbConn.query(sql,['1991-01-01','2023-01-01'],(err, result)=>{
         if(err){
             console.log(err);
         } else {
             res.send(result)
-            console.log(result)
         }
     })
 })
 
 
-_server.post('/stocks',(req, res)=>{
-    
-    const dateFrom = req.body.dateFrom;
-    const dateTo = req.body.dateTo;
-    console.log(dateFrom +"::"+dateTo)
 
-    const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= ? AND fieDate <= ?";
-        
-    dbConn.query(sql,[dateFrom,dateTo],(err, result)=>{
-    // dbConn.query(sql,['1991-01-01','2023-01-01'],(err, result)=>{
-        if(err){
-            console.log(err);
-        } else {
-            res.send(result)
-            console.log(result)
-        }
-    })
-})
 
 _server.listen(8080,()=>{
     console.log("AWS EC2 Server is now Online...");
