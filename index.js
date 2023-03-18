@@ -11,20 +11,20 @@ _server.use(express.json())
 require("dotenv").config();
 
 console.log(process.env.host);
-const  dbConn = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "password",
-    database: "reviewthepast"
-})
-
-
 // const  dbConn = mysql.createConnection({
-//     host: process.env.host,
-//     user: process.env.user,
-//     password: process.env.password,
-//     database: process.env.database
+//     host: "localhost",
+//     user: "root",
+//     password: "password",
+//     database: "reviewthepast"
 // })
+
+
+const  dbConn = mysql.createConnection({
+    host: process.env.host,
+    user: process.env.user,
+    password: process.env.password,
+    database: process.env.database
+})
 
 
 _server.get("/tester",(req,res)=>{
