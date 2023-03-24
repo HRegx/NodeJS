@@ -136,7 +136,31 @@ _server.post("/stocks",(req, res)=>{
     })
 })
 
+app.post('/send-email', async (req, res) => {
+  const { name, email, subject, message } = req.body;
 
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'your-email@gmail.com', // replace with your email address
+        pass: 'your-password', // replace with your password
+      },
+    });
+
+    await transporter.sendMail({
+      from: email,
+      to: 'recipient-email@gmail.com', // replace with your recipient email address
+      subject,
+      text: `From: ${name}\n\n${message}`,
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
 
 
 _server.listen(8080,()=>{
