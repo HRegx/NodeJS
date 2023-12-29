@@ -44,7 +44,7 @@ _server.get('/highScore', (req,res)=>{
 })
 
 _server.get('/handpick',(req, res)=>{
-    const sql = "SELECT f_id, f_score, f_time, f_date, f_screen_name FROM top_score ORDER BY f_score ASC LIMIT 10";
+    const sql = "SELECT f_id, f_score, f_time, f_date, f_screen_name FROM top_score ORDER BY f_score, f_time ASC LIMIT 10";                
 
     dbConn.query(sql,(err, result)=>{
         if(err){
