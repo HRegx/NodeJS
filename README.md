@@ -1,2 +1,2 @@
 # NodeJS
-For Education Purposes Only
+For Educational Purposes Only
