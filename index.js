@@ -15,7 +15,7 @@ console.log(process.env.host);
 //     host: "localhost",
 //     user: "root",
 //     password: "password",
-//     database: "reviewthepast"
+//     database: "puzzle"
 // })
 
 
@@ -44,7 +44,7 @@ _server.get('/highScore', (req,res)=>{
 })
 
 _server.get('/handpick',(req, res)=>{
-    const sql = "SELECT f_id, f_score, f_time, f_date, f_screen_name FROM top_score ORDER BY f_score, f_time ASC LIMIT 10";                
+    const sql = "SELECT f_id, f_score, f_time, f_date, f_screen_name FROM top_score ORDER BY f_score,  f_time ASC LIMIT 10";
 
     dbConn.query(sql,(err, result)=>{
         if(err){
@@ -55,6 +55,16 @@ _server.get('/handpick',(req, res)=>{
         }
     })
 })
+
+_server.get('/info',(req, res)=>{
+    const ipAddress = req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+
+    console.log(req.headers['sec-ch-ua']);
+    // console.log('Client IP address :' + ipAddress); 
+    console.log('User Agent : ' + userAgent)
+    // console.log(req.headers)
+});
 
 
 
@@ -79,6 +89,36 @@ _server.post("/inject",(req, res)=>{
     });
 })
 
+
+// _server.post("/stocks",(req, res)=>{    
+//     const dateFrom = req.body.dateFrom;
+//     const dateTo = req.body.dateTo;
+//     console.log(dateFrom +" :log from server: "+ dateTo)
+
+//     const sql = "SELECT fieID, fieDate, fieClose FROM reviewthepast.tabspy WHERE fieDate >= ? AND fieDate <= ?";
+        
+//     dbConn.query(sql,[dateFrom,dateTo],(err, result)=>{
+//     // dbConn.query(sql,['1991-01-01','2023-01-01'],(err, result)=>{
+//         if(err){
+//             console.log(err);
+//         } else {
+//             res.send(result)
+//         }
+//     })
+// })
+
+
+//Add field tempID and assign value from 1 to n
+//SELECT (@row_number:=@row_number+1) as tempID, fieID FROM reviewthepast.tabspy, (SELECT @row_number:=0) AS t;
+
+
+// SELECT tempID, fieID, fieDate, fieClose 
+// FROM (
+// 		SELECT (@row_number:=@row_number+1) as tempID, fieID, fieDate, fieClose 
+// 		FROM reviewthepast.tabspy, (SELECT @row_number:=2-1) AS t  
+// 		WHERE fieDate >= '1993-02-05' AND fieDate <= '1993-02-16'
+// ) as child
+// WHERE MOD(tempID, 2) = 0;
 
 
 //This POST will Buy Stocks After "Every no. of trading day" with Selected Date Range.
@@ -106,31 +146,33 @@ _server.post("/stocks",(req, res)=>{
     })
 })
 
-app.post('/send-email', async (req, res) => {
-  const { name, email, subject, message } = req.body;
 
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'your-email@gmail.com', // replace with your email address
-        pass: 'your-password', // replace with your password
-      },
-    });
 
-    await transporter.sendMail({
-      from: email,
-      to: 'recipient-email@gmail.com', // replace with your recipient email address
-      subject,
-      text: `From: ${name}\n\n${message}`,
-    });
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
+// app.post('/send-email', async (req, res) => {
+//     const { name, email, subject, message } = req.body;
+  
+//     try {
+//       const transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         auth: {
+//           user: 'your-email@gmail.com', // replace with your email address
+//           pass: 'your-password', // replace with your password
+//         },
+//       });
+  
+//       await transporter.sendMail({
+//         from: email,
+//         to: 'recipient-email@gmail.com', // replace with your recipient email address
+//         subject,
+//         text: `From: ${name}\n\n${message}`,
+//       });
+  
+//       res.sendStatus(200);
+//     } catch (error) {
+//       console.error(error);
+//       res.sendStatus(500);
+//     }
+//   });
 
 
 _server.listen(8080,()=>{
